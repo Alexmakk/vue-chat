@@ -23,7 +23,10 @@ export default new Vuex.Store({
     },
     SOCKET_updateUsers(state, users) {
       state.users = users
-    }
+    },
+    SOCKET_chatHistory(state, chatHistory) {
+      state.messages = chatHistory
+    },
   },
   actions: {
    

@@ -26,7 +26,8 @@ io.on('connection', socket => {
     users.add({
       id: socket.id,
       name: data.name,
-      room: room
+      room: room,
+      chatHistory: []
     })
     
     socket.join(room)
@@ -50,8 +51,14 @@ io.on('connection', socket => {
     if (!data.userType) {
       return cb('Данные некорректны')
     }
-    
-    socket.join(data.room)
+    console.log(data)
+    socket.join(data.user)
+
+    const user = users.get(data.user)
+    if (user) {      
+      // console.log(user.chatHistory)
+    io.to(data.user).emit('chatHistory', user.chatHistory)
+    }
   cb({userId: socket.id, room: data.room})
   })
 
@@ -59,8 +66,11 @@ io.on('connection', socket => {
     if (!data.text) {
       return cb('Пользователь не ввел сообщение') 
     }
+    console.log(data)
     const user = users.get(data.senderId)
     if (user) {
+      user.chatHistory.push(data)
+      console.log(user.chatHistory)
       io.to(data.room).emit('newMessage', m(user.name, data.text, data.senderId, data.id, user.room))
     }
     cb() 
@@ -72,6 +82,11 @@ io.on('connection', socket => {
       io.emit('updateUsers', users.getUsers())
       
     }
+  })
+
+  socket.on('error', (err) => {
+    console.log('received error from client:', socket.id)
+    console.log(err)
   })
 
 })

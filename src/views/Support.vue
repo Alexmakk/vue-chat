@@ -6,7 +6,7 @@
         <li
           class="room"
           :class="[currentRoom === user.room ? 'active' : '']"
-         @click="connectToRoom(user.room)"
+         @click="connectToRoom(user.id)"
         >
         {{ user.name }}
         </li>

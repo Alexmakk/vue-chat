@@ -22,12 +22,12 @@ function sendMessage() {
   );
 }
 
-function connectToRoom(room) {
+function connectToRoom(user) {
   // this.messages = [];
 
   const support = {
     userType: this.userType,
-    room
+    user
   };
 
   this.$socket.emit('supportJoined', support, data => {
