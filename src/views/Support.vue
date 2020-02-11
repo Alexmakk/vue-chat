@@ -23,7 +23,7 @@
           'user']" class="message">{{ message.text }}</span>
         </div>
       </div>
-      <form @submit.prevent="sendMessage" class="message-form">
+      <form @submit.prevent="sendMessage(userId)" class="message-form">
         <input
           class="message-input"
           autofocus
@@ -44,6 +44,7 @@ export default {
   name: 'Support',
   data() {
     return {
+      userId: '',
       newMessage: '',
       currentUser: null,
       currentRoom: null,

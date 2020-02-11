@@ -2,7 +2,8 @@ function showDialog() {
   this.isDialogOpen = !this.isDialogOpen;
 }
 
-function sendMessage() {
+function sendMessage(userId) {
+  console.log(userId)
   if (this.newMessage.trim() === '') return;
   this.$socket.emit(
     'createMessage',
@@ -10,7 +11,9 @@ function sendMessage() {
       text: this.newMessage,
       room: this.currentRoom,
       senderId: this.currentUser,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      userType: this.userType,
+      userId: userId || null
     },
     data => {
       if (typeof data === 'string') {
@@ -24,6 +27,7 @@ function sendMessage() {
 
 function connectToRoom(user) {
   // this.messages = [];
+  this.userId = user
 
   const support = {
     userType: this.userType,

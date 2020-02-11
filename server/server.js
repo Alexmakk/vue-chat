@@ -18,20 +18,20 @@ io.on('connection', socket => {
       return cb('Данные некорректны')
     }
     users.remove(socket.id)
-    let room = Date.now()
-    const checkRoom = users.getByRoom(room)
-    if (checkRoom.length) {
-      room++
-    }
+    // let room = Date.now()
+    // const checkRoom = users.getByRoom(room)
+    // if (checkRoom.length) {
+    //   room++
+    // }
     users.add({
       id: socket.id,
       name: data.name,
-      room: room,
+      // room: room,
       chatHistory: []
     })
     
-    socket.join(room)
-  cb({userId: socket.id, room: room}) 
+    // socket.join(room)
+  cb({userId: socket.id}) 
   io.emit('updateUsers', users.getUsers()) 
   })
 
@@ -67,11 +67,12 @@ io.on('connection', socket => {
       return cb('Пользователь не ввел сообщение') 
     }
     console.log(data)
-    const user = users.get(data.senderId)
+    let user = users.get(data.senderId)
+    if (data.userId !== null) {user = users.get(data.userId)} 
     if (user) {
       user.chatHistory.push(data)
       console.log(user.chatHistory)
-      io.to(data.room).emit('newMessage', m(user.name, data.text, data.senderId, data.id, user.room))
+      io.to(user.id).emit('newMessage', m(user.name, data.text, data.senderId, data.id, user.room))
     }
     cb() 
   })
