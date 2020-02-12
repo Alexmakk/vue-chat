@@ -2,17 +2,23 @@
   "name": "vue_chat",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "12.7.0"
+  },
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "client": "vue-cli-service serve",
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vue-socket.io": "^3.0.7",
-    "vuex": "^3.1.2"
+    "vuex": "^3.1.2",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.0",
@@ -23,7 +29,8 @@
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "nodemon": "^2.0.2"
   },
   "eslintConfig": {
     "root": true,
@@ -39,6 +46,8 @@
     },
     "rules": {}
   },
+  "author": "Alexej",
+  "license": "ISC",
   "browserslist": [
     "> 1%",
     "last 2 versions"

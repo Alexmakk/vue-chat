@@ -2,18 +2,19 @@ function showDialog() {
   this.isDialogOpen = !this.isDialogOpen;
 }
 
-function sendMessage(userId) {
-  console.log(userId)
+function sendMessage() {
+
+  const id = (Date.now() + Math.random()).toString()
+
   if (this.newMessage.trim() === '') return;
   this.$socket.emit(
     'createMessage',
     {
+      id: id,
       text: this.newMessage,
-      room: this.currentRoom,
-      senderId: this.currentUser,
-      id: Date.now().toString(),
-      userType: this.userType,
-      userId: userId || null
+      senderId: this.user.id,
+      userType: this.user.userType,
+      recipientId: this.recipientId || null
     },
     data => {
       if (typeof data === 'string') {
@@ -25,22 +26,18 @@ function sendMessage(userId) {
   );
 }
 
-function connectToRoom(user) {
-  // this.messages = [];
-  this.userId = user
-
-  const support = {
-    userType: this.userType,
-    user
+function connectToUser(userId) {
+  
+  const obj = {
+    userType: this.user.userType,
+    userId
   };
 
-  this.$socket.emit('supportJoined', support, data => {
+  this.$socket.emit('connectToUser', obj, data => {
     if (typeof data === 'string') {
       console.error(data);
     } else {
-      support.id = data.userId;
-      this.currentRoom = data.room
-      this.currentUser = support.id
+      this.recipientId = userId
     }
   })
 }
@@ -50,8 +47,9 @@ function connectSupport() {
     userType: 'support'
   };
 
-  this.$socket.emit('connectSupport', support, data => {
+  this.$socket.emit('supportJoined', support, data => {
     if (typeof data === 'string') {
+
       console.error(data);
     } else {
       support.id = data.userId;
@@ -73,25 +71,21 @@ function handleSubmit() {
       console.error(data);
     } else {
       user.id = data.userId;
-      user.room = data.room;
-
       this.setUser(user);
 
       this.isDialogOpen = false;
-      this.currentRoom = user.room
-      this.currentUser = user.id
+      this.currentUserId = user.id
     }
   });  
 }
 
 function handleInput(name, value) {
-  // console.log(name, value);
   this[name] = value;
 }
 
 export {
   sendMessage,
-  connectToRoom,
+  connectToUser,
   handleInput,
   showDialog,
   handleSubmit,

@@ -2,28 +2,27 @@
   <div class="support-area">
     <aside class="support-sidebar">
       <h3>Пользователи</h3>
-      <ul v-for="user in users" :key="user.id">
+      <ul v-for="u in users" :key="u.id">
         <li
           class="room"
-          :class="[currentRoom === user.room ? 'active' : '']"
-         @click="connectToRoom(user.id)"
+          :class="[recipientId === u.id ? 'active' : '']"
+         @click="connectToUser(u.id)"
         >
-        {{ user.name }}
+        {{ u.name }}
         </li>
       </ul>
     </aside>
     <section class="support-session">
       <header class="current-chat">
-        <h3 v-if="currentRoom"> Чат № {{ currentRoom }}</h3>
-        <h3 v-else>Чат</h3>
+        <h3>Чат</h3>
       </header>
-      <div class="chat-session">
+      <div class="chat-session" ref="block">
         <div v-for="message in messages" :key="message.id">
-          <span :class="[ message.senderId === currentUser ? 'support' :
+          <span :class="[ message.senderId === user.id ? 'support' :
           'user']" class="message">{{ message.text }}</span>
         </div>
       </div>
-      <form @submit.prevent="sendMessage(userId)" class="message-form">
+      <form @submit.prevent="sendMessage" class="message-form">
         <input
           class="message-input"
           autofocus
@@ -37,28 +36,33 @@
 </template>
 
 <script>
-import { sendMessage, connectToRoom} from '@/methods';
+import { sendMessage, connectToUser} from '@/methods';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'Support',
   data() {
     return {
-      userId: '',
-      newMessage: '',
-      currentUser: null,
-      currentRoom: null,
-      userType: 'support',
+      recipientId: '',
+      newMessage: ''
     }
   },
   methods: {
     ...mapMutations(["setUser"]),
     sendMessage,
-    connectToRoom
+    connectToUser
   },
 
   computed: 
-    mapState(["users", "messages"])
+    mapState(["user", "users", "messages"]),
+
+  watch: {
+    messages() {
+      setTimeout(() => {
+        this.$refs.block.scrollTop = this.$refs.block.scrollHeight;
+      });
+    }
+  }
   
 }
 </script>

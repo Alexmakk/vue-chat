@@ -7,8 +7,12 @@ class Users {
     this.users.push(user)
   }
 
-  get(id) {
+  getUserbyId(id) {
     return this.users.find(user => user.id === id)
+  }
+
+  getUserbyType(type) {
+    return this.users.find(user => user.userType === type)
   }
 
   getUsers() {
@@ -16,7 +20,7 @@ class Users {
   }
 
   remove(id) {
-    const user = this.get(id)
+    const user = this.getUserbyId(id)
 
     if (user) {
       this.users = this.users.filter(user => user.id !== id)
@@ -25,12 +29,6 @@ class Users {
     return user
   }
 
-  getByRoom(room) {
-    return this.users.filter(user => user.room === room)
-  }
-  getAllRooms() {
-    return this.users.map(user => user.room).filter(item => item !== undefined)
-  }
 }
 
 module.exports = function() {

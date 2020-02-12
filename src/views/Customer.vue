@@ -6,7 +6,7 @@
     </p>
 
     <ChatWidget
-      v-if="userName"
+      v-if="currentUserId"
       :newMessage="newMessage"
       :currentUser="user"
       :messages="messages"
@@ -49,11 +49,8 @@ export default {
     return {
       title: 'Customer Support',
       userName: '',
-      userId: '',
       userType: 'user',
-      room: "",
-      currentUser: null,
-      currentRoom: null,
+      currentUserId: null,
       newMessage: '',
       isDialogOpen: false,
     }

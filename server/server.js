@@ -1,97 +1,99 @@
-const app = require('express')()
-const socketIO = require('socket.io')
-const http = require('http')
-const users = require('./users')()
+const app = require('express')();
+const socketIO = require('socket.io');
+const http = require('http');
+const users = require('./users')();
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
-const server = http.createServer(app)
-const io = socketIO(server)
-
-const m = (name, text, senderId, id, room) => ({ name, text, senderId, id, room })
+const server = http.createServer(app);
+const io = socketIO(server);
 
 io.on('connection', socket => {
-  console.log('IO Connection')
+  console.log('IO Connection');
 
   socket.on('userJoined', (data, cb) => {
     if (!data.name) {
-      return cb('Данные некорректны')
+      return cb('Данные некорректны');
     }
-    users.remove(socket.id)
-    // let room = Date.now()
-    // const checkRoom = users.getByRoom(room)
-    // if (checkRoom.length) {
-    //   room++
-    // }
+    users.remove(socket.id);
+
     users.add({
       id: socket.id,
       name: data.name,
-      // room: room,
+      userType: data.userType,
       chatHistory: []
-    })
-    
-    // socket.join(room)
-  cb({userId: socket.id}) 
-  io.emit('updateUsers', users.getUsers()) 
-  })
+    });
 
-  socket.on('connectSupport', (data, cb) => {
-    if (!data.userType) {
-      return cb('Данные некорректны')
-    }
-    
-    users.add({
-      id: socket.id,
-      userType: data.userType
-    })
-  cb({userId: socket.id})
-  })
+    cb({ userId: socket.id });
+    io.emit('updateUsers', users.getUsers());
+  });
 
   socket.on('supportJoined', (data, cb) => {
     if (!data.userType) {
-      return cb('Данные некорректны')
+      return cb('Данные некорректны');
     }
-    console.log(data)
-    socket.join(data.user)
+    const user = users.getUserbyType(data.userType);
+    if (user) {
+      return cb('Оператор уже вошел, вы можете войти только как пользователь');
+    } else {
+      users.add({
+        id: socket.id,
+        userType: data.userType
+      });
+    }
+    cb({ userId: socket.id });
+  });
 
-    const user = users.get(data.user)
-    if (user) {      
-      // console.log(user.chatHistory)
-    io.to(data.user).emit('chatHistory', user.chatHistory)
+  socket.on('connectToUser', (data, cb) => {
+    if (!data.userType) {
+      return cb('Данные некорректны');
     }
-  cb({userId: socket.id, room: data.room})
-  })
+
+    const user = users.getUserbyId(data.userId);
+    socket.join(user.id)
+    if (user) {
+      socket.emit('chatHistory', user.chatHistory);
+    }
+    cb({ userId: socket.id });
+  });
 
   socket.on('createMessage', (data, cb) => {
     if (!data.text) {
-      return cb('Пользователь не ввел сообщение') 
+      return cb('Пользователь не ввел сообщение');
     }
-    console.log(data)
-    let user = users.get(data.senderId)
-    if (data.userId !== null) {user = users.get(data.userId)} 
+
+    let user = {};
+
+    if (data.recipientId !== null) {
+      user = users.getUserbyId(data.recipientId);
+    } else if (data.userType === 'support') {
+      return cb('Не выбран получатель сообщения')
+    } else {
+      user = users.getUserbyId(data.senderId);
+    }
+
     if (user) {
-      user.chatHistory.push(data)
-      console.log(user.chatHistory)
-      io.to(user.id).emit('newMessage', m(user.name, data.text, data.senderId, data.id, user.room))
+      user.chatHistory.push(data);
+      io.to(user.id).emit('newMessage', data);
     }
-    cb() 
-  })
-  
+    cb();
+  });
+
   socket.on('disconnect', () => {
-    const user = users.remove(socket.id)
+    console.log(`user ${socket.id} disconnect`);
+    const user = users.remove(socket.id);
     if (user) {
-      io.emit('updateUsers', users.getUsers())
-      
+      socket.emit('clearStore')
+      io.emit('updateUsers', users.getUsers());
     }
-  })
+  });
 
-  socket.on('error', (err) => {
-    console.log('received error from client:', socket.id)
-    console.log(err)
-  })
-
-})
+  socket.on('error', err => {
+    console.log('received error from client:', socket.id);
+    console.log(err);
+  });
+});
 
 server.listen(port, () => {
-  console.log(`Server has been started on port ${port}...`)
-})
+  console.log(`Server has been started on port ${port}...`);
+});
