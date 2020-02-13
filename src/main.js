@@ -8,7 +8,7 @@ import './App.css';
 Vue.use(
   new VueSocketIO({
     debug: false,
-    connection: '/',
+    connection: 'localhost:3000',
     vuex: {
       store,
       actionPrefix: 'SOCKET_',

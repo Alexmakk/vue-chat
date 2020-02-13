@@ -19,7 +19,6 @@ io.on('connection', socket => {
       return cb('Данные некорректны');
     }
     users.remove(socket.id);
-    console.log(data)
     users.add({
       id: socket.id,
       name: data.name,
@@ -37,7 +36,7 @@ io.on('connection', socket => {
     }
     const user = users.getUserbyType(data.userType);
     if (user) {
-      return cb('Оператор уже вошел, вы можете войти только как пользователь');
+      cb({ userId: user.id });
     } else {
       users.add({
         id: socket.id,
@@ -45,6 +44,7 @@ io.on('connection', socket => {
       });
     }
     cb({ userId: socket.id });
+    io.emit('updateUsers', users.getUsers());
   });
 
   socket.on('connectToUser', (data, cb) => {

@@ -5,9 +5,14 @@
 npm install
 ```
 
+## Start server
+```
+npm run server
+```
+
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run client
 ```
 
 ### Compiles and minifies for production
@@ -15,10 +20,6 @@ npm run serve
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
