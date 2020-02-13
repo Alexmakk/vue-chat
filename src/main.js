@@ -8,7 +8,7 @@ import './App.css';
 Vue.use(
   new VueSocketIO({
     debug: false,
-    connection: 'ws://vue-chat-simple.herokuapp.com/socket.io/?EIO=4&transport=websocket',
+    connection: '/',
     vuex: {
       store,
       actionPrefix: 'SOCKET_',
