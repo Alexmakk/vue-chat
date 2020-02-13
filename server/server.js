@@ -1,4 +1,5 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const socketIO = require('socket.io');
 const http = require('http');
 const users = require('./users')();
@@ -7,6 +8,8 @@ const port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 const io = socketIO(server);
+
+app.use(express.static(__dirname + "/../dist"))
 
 io.on('connection', socket => {
   console.log('IO Connection');
