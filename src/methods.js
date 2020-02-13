@@ -60,7 +60,6 @@ function connectSupport() {
 }
 
 function handleSubmit() {
-console.log('click')
   const user = {
     name: this.userName,
     userType: this.userType

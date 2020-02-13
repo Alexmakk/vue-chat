@@ -19,7 +19,7 @@ io.on('connection', socket => {
       return cb('Данные некорректны');
     }
     users.remove(socket.id);
-
+    console.log(data)
     users.add({
       id: socket.id,
       name: data.name,
